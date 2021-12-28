@@ -2,11 +2,18 @@ import mariadb
 import sys
 import pandas as pd
 
-DATABASE_HOST = ''
-DATABASE_USER = ''
-DATABASE_PASSWORD = ''
-DATABASE_NAME = ''
-PORT = 000
+with open(r"C:\Users\Młody\Documents\Doktorat wdrożeniowy\Semestr III\Modern Programming Techniques\database_con.txt",
+          'r', encoding="UTF-8") as f:
+    db_credentials = f.read().split("\n")
+    for i in range(len(db_credentials)):
+        tmp = db_credentials[i].split(" = ")[1]
+        db_credentials[i] = tmp
+
+DATABASE_HOST = db_credentials[0]
+DATABASE_USER = db_credentials[1]
+DATABASE_PASSWORD = db_credentials[2]
+DATABASE_NAME = db_credentials[3]
+PORT = int(db_credentials[4])
 
 
 def validate_text(text):
