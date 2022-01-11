@@ -15,7 +15,7 @@ def showImg(img):
 
 if __name__ == "__main__":
     # showImg()
-    img = cv.imread(r"D:\CondaPy - Projects\MPT\MPT\data\4_1_4_BSE_001x250_cropped.jpg")
+    img = cv.imread(r"data\4_1_4_BSE_001x250_cropped.jpg")
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
     x_data = img[:, 0]
