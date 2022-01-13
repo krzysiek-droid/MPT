@@ -2,42 +2,67 @@
 
 import datetime
 import cv2 as cv
-import statistics as stats
 import numpy
 
 
-def showImg(img):
+
+# Shows cvimage
+def showImg(image):
     cv.namedWindow("Img Preview", cv.WINDOW_NORMAL)
-    cv.imshow("Img Preview", img)
+    cv.imshow("Img Preview", image)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
 
+# Return numpy.array of polynomial fit values for X range of image width
+def row_polynom_vals(image, row, polynom_degree):
+    print(f"Polynomial coefficients: {numpy.polyfit(x=range(image.shape[1]), y=image[row], deg=polynom_degree)}")
+    return numpy.polyval(p=numpy.polyfit(x=range(image.shape[1]), y=image[row], deg=polynom_degree),
+                         x=range(0, img.shape[1]))
+
+
+# Changing an numpy.array values into relative to 1st element values
+# For purposes of calculating ShI (Shadow Intensity)
+def into_relative(values):
+    for idx in range(1, values.size):
+        values[idx] = 1 - values[idx] / values[0]
+    return values
+
+
+# Function for proper addition of two pixel intensities
+# By default, adding pixels intensity can end up in changing the white pixel into black (from 255 to 0)
+# i.e. 240 + 20 = 5 (not 260 nor 255)
+def pxl_intensity_add(intens1, intens2):
+    if intens1 + intens2 > 255:
+        return 255
+    else:
+        return intens1 + intens2
+
+
+# Function for normalization of image intensity Px = Px + (Px * ShI)
+# ShI - shadow intensity, 1 - (Px(x)/P(0) on a single line (image row)
+# ShI - intensity of shadow therefore its value tells about % reduction of pixel intensity
+def normalize_img(image, polynomial_values):
+    st_time = datetime.datetime.now()
+    for pxl_row in range(image.shape[0]):
+        for pxl_pos in range(1, image.shape[1]):
+            # image[pxl_row, pxl_pos] = pxl_intensity_add(image[pxl_row, pxl_pos],
+            #                                             image[pxl_row, pxl_pos] * polynomial_values[pxl_pos])
+            image[pxl_row, pxl_pos] = image[pxl_row, pxl_pos] * (1 + polynomial_values[pxl_pos])
+    print(f"Image processing (normalization) time: {datetime.datetime.now() - st_time} (H:M:S)")
+    return image
+
+
 if __name__ == "__main__":
-    # showImg()
     img = cv.imread(r"data\4_1_4_BSE_001x250_cropped.jpg")
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    x_data = img[:, 0]
-    y_data = img[0, :]
+    for line in range(0, 1000, 100):
+        poly_values = into_relative(row_polynom_vals(img, line, 2))
+        normalize_img(img[line:], poly_values)
+        # cv.imwrite(f'data/Processed Images/processed_img.jpg', cv.COLOR_BGR2GRAY)
 
-    line = img[700, :]
-    print(f"Intensywność pikseli w kolumnie 700: {line}")
-    m_line = stats.mean(line)
+    showImg(img)
 
-    polynomial_fit = numpy.polyfit(x=y_data, y=x_data, deg=1)
-    poly_values = numpy.polyval(p=polynomial_fit, x=y_data)
 
-    print(f"Wartość wielomianu dla każdego punktu w rzędzie: {poly_values}")
 
-    img_processed = img
-
-    print(f"Zgodność obrazów przed procesem: {img_processed.size == img.size}")
-
-    st_time = datetime.datetime.now()
-    for row in x_data:
-        for column in y_data:
-            img_processed[row, column] = img[row, column] - poly_values[column]
-
-    print(f"Czas normalizacji: {datetime.datetime.now() - st_time}")
-    showImg(img_processed)
