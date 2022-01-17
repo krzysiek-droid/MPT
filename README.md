@@ -28,3 +28,8 @@ During my PhD work, im going to produce approx. 100 of samples for different mat
         - automate the thresholding process - avoiding of losing the information in form of black areas (defects of samples), normalization of images?
         - data acquisition to mariaDB database, data analysis
 Those are the issues that I see in which I could use the help of others. I am open to trying a different software for image analysis or to the utilization of some kind of interface between ImageJ and Python in order to set up a cooperation between these two. Please do not hesitate to throw the opinions :) 
+
+Current status:
+ - pre-processing done (data/processed_images to see the process outcome)
+ - contour acquisition done
+ - contour data analysis TO BE DONE
