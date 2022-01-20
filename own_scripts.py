@@ -1,3 +1,7 @@
+import cv2
+import numpy as np
+import datetime
+
 
 def shadow_remove(image):
     rgb_planes = cv2.split(image)
@@ -14,7 +18,7 @@ def shadow_remove(image):
 # Return numpy.array of polynomial fit values for X range of image width
 def row_polynom_vals(image, row, polynom_degree):
     return np.polyval(p=np.polyfit(x=range(image.shape[1]), y=image[row], deg=polynom_degree),
-                      x=range(0, img.shape[1]))
+                      x=range(0, image.shape[1]))
 
 
 # Changing numpy.array values into np.array of shadowing intensity (regarding 1st el. of array)
